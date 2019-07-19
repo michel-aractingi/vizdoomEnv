@@ -1,0 +1,7 @@
+# exclude swp files and cache files
+*.swp
+*.wad.bak
+_vizdoom*
+__pycache__
+.idea
+R_maze/*
