@@ -104,9 +104,10 @@ def is_last_action_forward(game):
     return bool(game.get_last_action()[0]) #Forward action should always be the first action
 
 
-def collision_detected(depth, forward_action=False):
+def collision_detected(game):
 
-    compressed_depth = compress_depthmap(depth)
+    compressed_depth = compress_depthmap(game.state.depth_buffer)
+    forward_action = game.get_last_action()[0]
     len_compressed = compressed_depth.shape[0]
     crop_ratio = len_compressed // 4
     if np.min(compressed_depth[crop_ratio:len_compressed - crop_ratio]) < 2 and bool(forward_action):

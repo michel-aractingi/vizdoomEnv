@@ -13,7 +13,7 @@ CONFIG_DIR = '/home/maractin/Workspace/vizdoomEnv/scenarios/'
 
 def random_env(game):
 
-    game.init()
+    game.init(); os.system('rm -rf _vizdoom*')
     shoot = [0, 0, 1]
     left = [1, 0, 0]
     right = [0, 1, 0]

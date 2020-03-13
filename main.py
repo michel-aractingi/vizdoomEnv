@@ -1,11 +1,11 @@
 import sys
 from utility import default_config
-from vizdoomEnv import vizdoomEnv
+from mazeEnv import mazeEnv
 
 def main(args):
 
     flags = default_config().parse_args(args)
-    env = vizdoomEnv(flags)
+    env = mazeEnv(flags)
     import pudb; pudb.set_trace()
 
 if __name__=='__main__':
