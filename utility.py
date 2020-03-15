@@ -58,11 +58,13 @@ def default_config(parser = argparse.ArgumentParser([])):
 
     parser.add_argument('--config_dir', type=str, default="/home/maractin/Workspace/vizdoomEnv/scenarios/",
                         help='Specify config file path')
-    parser.add_argument('--config_file','-cfg', type=str, default="gymEnv.cfg",
+    parser.add_argument('--config','-cfg', type=str, default="gymEnv.cfg",
                         help='Specify config file')
     parser.add_argument('--wad','-w', type=str, default=None,
                         help='Specify wad file (should be in config_dir)')
-    parser.add_argument('--use_rgb', action='store_true', default=False,
+    parser.add_argument('--episode_length', type=int, default=50,
+                        help='Horizon of the episode.')
+    parser.add_argument('--use_rgb', action='store_true', default=True,
                         help='Specify whether to add rgb input to the state space')
     parser.add_argument('--use_grayscale', action='store_true', default=False,
                         help='Specify whether to use grayscale input to the state space')
@@ -74,9 +76,10 @@ def default_config(parser = argparse.ArgumentParser([])):
                         help='Specify whether to add automap map (top down view of the local map) input to the state space')
     parser.add_argument('--action_space', type=str, default='d',
                         help='Specify which type of action space to use (binary, discrete, continuous)')
+    parser.add_argument('--num_actions', type=int, default=4)
     parser.add_argument('--render', '-r', type=str2bool, default=False,
                         help='To enable rendering')
-    parser.add_argument('--flattened_obs', '-fobs', type=str2bool, default=True,
+    parser.add_argument('--flattened_obs', '-fobs', type=str2bool, default=False,
                         help='Whether to present the observations as flattened array or not')
     parser.add_argument('--img_size', type=int, default=None,
                         help='Img dimension to be resized to')
@@ -106,7 +109,7 @@ def is_last_action_forward(game):
 
 def collision_detected(game):
 
-    compressed_depth = compress_depthmap(game.state.depth_buffer)
+    compressed_depth = compress_depthmap(game.get_state().depth_buffer)
     forward_action = game.get_last_action()[0]
     len_compressed = compressed_depth.shape[0]
     crop_ratio = len_compressed // 4

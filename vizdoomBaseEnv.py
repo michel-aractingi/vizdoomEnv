@@ -13,20 +13,25 @@ from gym.spaces.multi_binary import MultiBinary
 from vizdoom import DoomGame
 from utility import collision_detected, rgb2gray
 
+CONFIG_DIR='/home/maractin/Workspace/vizdoomEnv/scenarios/'
+
 class vizdoomBaseEnv(core.Env):
     def __init__(self, args, game=None):
         self._config = deepcopy(args)
 
         #initialize DoomGame
         self.game = DoomGame() if game is None else game 
-        self.game.load_config(os.path.join(CONFIG_DIR,args.config_file))
+        self.game.load_config(os.path.join(CONFIG_DIR,args.config))
         self.game.set_doom_scenario_path(os.path.join(CONFIG_DIR,args.wad))
         self.game.set_episode_timeout(args.episode_length)
 
-        self.game.set_window_visible(self._render)
+        self.game.set_window_visible(args.render)
         self.game.set_depth_buffer_enabled(args.use_depth)
         self.game.set_labels_buffer_enabled(args.use_labels)
         self.game.set_automap_buffer_enabled(args.use_automap)
+
+        self.game.init(); os.system('rm -rf _vizdoom*')
+
 
         self._observation_space = Box(low=-np.inf,high=np.inf,
                 shape=self._get_observation().shape, dtype=np.float32)
@@ -36,11 +41,8 @@ class vizdoomBaseEnv(core.Env):
             self._action_space = MultiBinary(args.num_actions)
         elif self._config.action_space.lower() in ('d', 'discrete'):
             self._action_space = Discrete(args.num_actions)
-            self._action_dict  = ...
         else:
             raise NotImplementedError('Invalid action space')
-        
-        self.game.init(); os.system('rm -rf _vizdoom*')
         
         self._env_timestep = 0
         self._horizon = self.game.get_episode_timeout() - \
@@ -60,7 +62,7 @@ class vizdoomBaseEnv(core.Env):
         self.game.new_episode()
         self._env_timestep = self.game.get_episode_time() - self.game.get_episode_start_time()
         self._reset = True
-        self._info.update(rewards, collisions, length)
+        self._info.reset()
 
         return self._get_observation()
 

@@ -6,20 +6,13 @@ import collections
 import os
 import random
 
-from gym import core
-from gym.spaces.box import Box
-from gym.spaces.discrete import Discrete
-from gym.spaces.multi_binary import MultiBinary
-
+from gym.spaces import Box, Discrete, MultiBinary
 from vizdoomBaseEnv import EpisodicDict, vizdoomBaseEnv
-from vizdoom import DoomGame
 from vizdoom import GameVariable, doom_fixed_to_float
 from utility import collision_detected, rgb2gray
 import cv2
 
 Step = collections.namedtuple("Step", ["observation", "reward", "done", "info"])
-HEIGHT, WIDTH =120, 160
-CONFIG_DIR = '/home/maractin/Workspace/vizdoomEnv/scenarios/'
 
 class mazeEnv(vizdoomBaseEnv):
     def __init__(self, args):
@@ -49,9 +42,6 @@ class mazeEnv(vizdoomBaseEnv):
 
         super(mazeEnv, self).reset()
 
-        self._info.reset() 
-
-        self._actor_pos = self._get_actor_pos(True)
         self._ammo = self.game.get_game_variable(GameVariable.AMMO2)
         self._health = self.game.get_game_variable(GameVariable.HEALTH)
 
@@ -87,7 +77,8 @@ class mazeEnv(vizdoomBaseEnv):
         observation = self._get_observation()
         reward = self._get_reward(game_reward)
         
-        if collision_detected(self.game):
+        collision = 0
+        if self._config.use_depth and collision_detected(self.game):
             collision = 1
             reward -= 0.1
         self._info.update(reward, collision)
