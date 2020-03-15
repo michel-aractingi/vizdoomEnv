@@ -3,7 +3,7 @@ Contains Gym wrapper for [VizDoom](https://github.com/mwydmuch/ViZDoom) with som
 
 To test vizdoomEnv:
 ```
-python main.py --render=True
+python main.py --render=True --wad longhall.wad
 ```
 Make sure to have [pudb](https://pypi.org/project/pudb/) which is a python debugger. A breakpoint is set after 
 initializing the environment and a ipython notebook will open so you can observe the variables and control the environment
