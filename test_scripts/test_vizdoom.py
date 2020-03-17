@@ -14,6 +14,7 @@ CONFIG_DIR = '/home/maractin/Workspace/vizdoomEnv/scenarios/'
 def random_env(game):
 
     game.init(); os.system('rm -rf _vizdoom*')
+    import pudb; pudb.set_trace()
     shoot = [0, 0, 1]
     left = [1, 0, 0]
     right = [0, 1, 0]
@@ -56,6 +57,7 @@ def keyboard_env(game):
             print("=====================")
         print("Episode finished!")
         print("Total reward:", game.get_total_reward())
+        print("Total kills:", game.get_game_variable(GameVariable.KILLCOUNT))
         print("************************")
         time.sleep(2.0)
 

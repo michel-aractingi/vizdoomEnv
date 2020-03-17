@@ -1,5 +1,6 @@
 import numpy as np
 from vizdoom import * 
+import cv2 
 
 joystick_actions = [vizdoom.Button.MOVE_FORWARD, vizdoom.Button.MOVE_BACKWARD,
                     vizdoom.Button.TURN_LEFT, vizdoom.Button.TURN_RIGHT, vizdoom.Button.ATTACK]

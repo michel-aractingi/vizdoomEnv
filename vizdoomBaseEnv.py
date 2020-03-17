@@ -26,9 +26,8 @@ class vizdoomBaseEnv(core.Env):
         self.game.set_episode_timeout(args.episode_length)
 
         self.game.set_window_visible(args.render)
-        self.game.set_depth_buffer_enabled(args.use_depth)
-        self.game.set_labels_buffer_enabled(args.use_labels)
-        self.game.set_automap_buffer_enabled(args.use_automap)
+        self.game.set_depth_buffer_enabled(args.render_depth)
+        self.game.set_labels_buffer_enabled(args.render_labels)
 
         self.game.init(); os.system('rm -rf _vizdoom*')
 
@@ -72,7 +71,7 @@ class vizdoomBaseEnv(core.Env):
 
     def render(self,mode='rgb_array'):
         """ 
-        render different images (rgb, depth, automap, labelled objects) 
+        render different images (rgb, depth, labelled objects) 
          according to the config file
         """
 
@@ -89,10 +88,6 @@ class vizdoomBaseEnv(core.Env):
         if self._config.use_labels is not None:
             cv2.imshow('ViZDoom Labels Buffer', state.labels_buffer)
 
-        # Map buffer, in the same format as screen buffer.
-        if self._config.use_automap is not None:
-            cv2.imshow('ViZDoom Map Buffer', state.automap_buffer)
-
         cv2.waitKey(0)
 
         return state.screen_buffer
@@ -105,6 +100,23 @@ class vizdoomBaseEnv(core.Env):
         random.seed(seed)
         np.random.seed(seed)
         return seed
+
+    def _step_discrete(self, action):
+
+        assert action in range(self.action_space.n), ValueError(
+                "Actions should have value between (0 , {})".format(self.action_space.n))
+        action_oneHot = [0]*self.action_space.n
+        action_oneHot[action] = 1
+
+        return self.game.make_action(action_oneHot)
+
+    def _step_multibinary(self, action):
+
+        assert len(action) == self.action_space.shape[0], ValueError(
+                'Actions of len {} is invalid for {}-dim space'.format(
+                    len(action),self.action_space.shape[0]))
+
+        return self.game.make_action(list(action))
 
     def _get_observation(self):
         '''
@@ -134,15 +146,8 @@ class vizdoomBaseEnv(core.Env):
             else:
                 obs = labels
 
-        if self._config.use_automap:
-            automap = np.expand_dims(state.automap_buffer, axis=0)
-            if obs is not None:
-                obs = np.concatenate((obs, automap))
-            else:
-                obs = automap
-
         assert obs is not None, \
-            'No visual input presented! Make sure to use at least one of the input maps (rgb, grayscale, depth, labels, automap)'
+            'No visual input presented! Make sure to use at least one of the input maps (rgb, grayscale, depth, labels)'
     
         return obs 
    

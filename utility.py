@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import collections
 
 action_dict = { \
     0 : [0, 0, 0, 0, 0, 0], #Noop
@@ -46,6 +47,9 @@ vargs_list = ['config_dir','config_file','wad','use_rgb',
               'task', 'nb_goals', 'action_space', 'exp',
               'shaped_reward', 'use_grayscale', 'fix_seed']
 
+
+Step = collections.namedtuple("Step", ["observation", "reward", "done", "info"])
+
 def str2bool(x):
     if x.lower() in ('true','t','y','yes','1'):
         return True
@@ -56,43 +60,54 @@ def str2bool(x):
 
 def default_config(parser = argparse.ArgumentParser([])):
 
-    parser.add_argument('--config_dir', type=str, default="/home/maractin/Workspace/vizdoomEnv/scenarios/",
-                        help='Specify config file path')
+    #VizDoom args
     parser.add_argument('--config','-cfg', type=str, default="gymEnv.cfg",
                         help='Specify config file')
     parser.add_argument('--wad','-w', type=str, default=None,
                         help='Specify wad file (should be in config_dir)')
     parser.add_argument('--episode_length', type=int, default=50,
                         help='Horizon of the episode.')
+
+    #State space args
     parser.add_argument('--use_rgb', action='store_true', default=True,
                         help='Specify whether to add rgb input to the state space')
     parser.add_argument('--use_grayscale', action='store_true', default=False,
                         help='Specify whether to use grayscale input to the state space')
+    parser.add_argument('--render_depth', action='store_true', default=False,
+                        help='render depth channel')
+    parser.add_argument('--render_labels', action='store_true', default=False,
+                        help='render labels information')
     parser.add_argument('--use_depth', action='store_true', default=False,
                         help='Specify whether to add depth map input to the state space')
     parser.add_argument('--use_labels', action='store_true', default=False,
                         help='Specify whether to add object labels map (segmented) input to the state space')
-    parser.add_argument('--use_automap', action='store_true', default=False,
-                        help='Specify whether to add automap map (top down view of the local map) input to the state space')
+    parser.add_argument('--flattened_obs', '-fobs', type=str2bool, default=False,
+                        help='Whether to present the observations as flattened array or not')
+    parser.add_argument('--num_state_vars', type=int, default=0,
+                        help='Whether to add state variables to the observation space')
+
+    #Action space args
     parser.add_argument('--action_space', type=str, default='d',
                         help='Specify which type of action space to use (binary, discrete, continuous)')
     parser.add_argument('--num_actions', type=int, default=4)
+
+    #Visualization args
     parser.add_argument('--render', '-r', type=str2bool, default=False,
                         help='To enable rendering')
-    parser.add_argument('--flattened_obs', '-fobs', type=str2bool, default=False,
-                        help='Whether to present the observations as flattened array or not')
     parser.add_argument('--img_size', type=int, default=None,
-                        help='Img dimension to be resized to')
+                        help='Reshape vizdoom obs to square image of size.')
+
+    #Task specific args
     parser.add_argument('--shaped_reward', type=str2bool, default=True,
                         help='Whether to use the shaped sparse reward')
-    parser.add_argument('--num_state_vars', type=int, default=0,
-                        help='Whether to add state variables to the observation space')
     parser.add_argument('--task', type=str, default=None,
                         help='Which task to solve (Maze, goal-cond...)')
     parser.add_argument('--nb_goals', '-n', type=int, default=1,
                         help='Number of existing goals in an environment')
     parser.add_argument('--exp', '-e', type=int, default=1,
                         help='Reward exponent')
+
+    #Random seed 
     parser.add_argument('--fix_seed', type=str2bool, default=False,
                         help='Fix a given seed and therefore fix the events in the episode')
 
