@@ -1,12 +1,12 @@
 import sys
-from utility import default_config
-from mazeEnv import mazeEnv
-from shootEnv import shootEnv
+from doomUtils import default_config
+from mazeEnv import MazeEnv
+from shootEnv import ShootEnv
 
 def main(args):
 
     flags = default_config().parse_args(args)
-    env = shootEnv(flags)
+    env = ShootEnv(flags)
     import pudb; pudb.set_trace()
 
 if __name__=='__main__':

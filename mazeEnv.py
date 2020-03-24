@@ -9,17 +9,17 @@ import random
 from gym.spaces import Box, Discrete, MultiBinary
 from vizdoomBaseEnv import EpisodicDict, vizdoomBaseEnv
 from vizdoom import GameVariable, doom_fixed_to_float
-from utility import collision_detected, rgb2gray
+from doomUtils import collision_detected, rgb2gray
 import cv2
 
 Step = collections.namedtuple("Step", ["observation", "reward", "done", "info"])
 
-class mazeEnv(vizdoomBaseEnv):
+class MazeEnv(vizdoomBaseEnv):
     def __init__(self, args):
         '''
         TODO init vizdoom with config/ figure how to represent the config file
         '''
-        super(mazeEnv, self).__init__(args)
+        super(MazeEnv, self).__init__(args)
         self._init_seed = 0            # will be used if args.fix_seed is invoked#
 
         if self._config.flattened_obs:
@@ -40,7 +40,7 @@ class mazeEnv(vizdoomBaseEnv):
             self._init_seed = (self._init_seed + 1) % 2**32     # set_seed requires int
             self.game.set_seed(self._init_seed)
 
-        super(mazeEnv, self).reset()
+        super(MazeEnv, self).reset()
 
         self._ammo = self.game.get_game_variable(GameVariable.AMMO2)
         self._health = self.game.get_game_variable(GameVariable.HEALTH)
@@ -107,7 +107,7 @@ class mazeEnv(vizdoomBaseEnv):
 
     def _get_observation(self):
 
-        obs = super(mazeEnv, self)._get_observation()
+        obs = super(MazeEnv, self)._get_observation()
         if self._config.img_size is not None:
             im_size = self._config.img_size
             obs = np.rollaxis(obs,0,3)

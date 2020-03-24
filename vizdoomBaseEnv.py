@@ -11,7 +11,7 @@ from gym.spaces.discrete import Discrete
 from gym.spaces.multi_binary import MultiBinary
 
 from vizdoom import DoomGame
-from utility import collision_detected, rgb2gray
+from doomUtils import collision_detected, rgb2gray
 
 CONFIG_DIR='/home/maractin/Workspace/vizdoomEnv/scenarios/'
 
@@ -106,12 +106,11 @@ class vizdoomBaseEnv(core.Env):
         assert action in range(self.action_space.n), ValueError(
                 "Actions should have value between (0 , {})".format(self.action_space.n))
         action_oneHot = [0]*self.action_space.n
-        action_oneHot[action] = 1
+        action_oneHot[int(action)] = 1
 
         return self.game.make_action(action_oneHot)
 
     def _step_multibinary(self, action):
-
         assert len(action) == self.action_space.shape[0], ValueError(
                 'Actions of len {} is invalid for {}-dim space'.format(
                     len(action),self.action_space.shape[0]))
