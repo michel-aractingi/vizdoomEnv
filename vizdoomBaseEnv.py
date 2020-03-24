@@ -94,6 +94,7 @@ class vizdoomBaseEnv(core.Env):
 
     def close(self):
         cv2.destroyAllWindows()
+        self.game.close()
         super(vizdoomBaseEnv, self).close()
 
     def seed(self, seed):
